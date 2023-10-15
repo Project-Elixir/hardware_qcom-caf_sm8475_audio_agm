@@ -64,7 +64,6 @@
 #include <agm/device.h>
 #include <agm/session_obj.h>
 #include <agm/utils.h>
-#include "ats.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <pthread.h>
@@ -78,29 +77,7 @@
 
 #define RETRY_INTERVAL_US 500 * 1000
 static bool agm_initialized = 0;
-static pthread_t ats_thread;
 static const int MAX_RETRIES = 120;
-
-static void *ats_init_thread(void *obj __unused)
-{
-    int ret = 0;
-    int retry = 0;
-
-    while(retry++ < MAX_RETRIES) {
-        if (agm_initialized) {
-            ret = ats_init();
-            if (0 != ret) {
-                AGM_LOGE("ats_init failed retry %d err %d", retry, ret);
-                usleep(RETRY_INTERVAL_US);
-            } else {
-                AGM_LOGD("ATS initialized");
-                break;
-            }
-        }
-        usleep(RETRY_INTERVAL_US);
-    }
-    return NULL;
-}
 
 int agm_init()
 {
@@ -122,11 +99,6 @@ int agm_init()
     param.sched_priority = SCHED_FIFO;
     pthread_attr_setschedparam (&tattr, &param);
 
-    ret = pthread_create(&ats_thread, (const pthread_attr_t *) &tattr,
-                                           ats_init_thread, NULL);
-    if (ret)
-        AGM_LOGE(" ats init thread creation failed\n");
-
     ret = session_obj_init();
     if (0 != ret) {
         AGM_LOGE("Session_obj_init failed with %d", ret);
@@ -142,8 +114,6 @@ int agm_deinit()
 {
     //close all sessions first
     if (agm_initialized) {
-        AGM_LOGD("Deinitializing ATS...");
-        ats_deinit();
         session_obj_deinit();
         agm_initialized = 0;
     }

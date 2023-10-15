@@ -52,8 +52,7 @@ LOCAL_SHARED_LIBRARIES := \
     libar-gsl \
     liblog \
     liblx-osal \
-    libaudioroute \
-    libats
+    libaudioroute
 
 #if android version is R, use qtitinyalsa lib otherwise use upstream ones
 #This assumes we would be using AR code only for Android R and subsequent versions.

@@ -53,7 +53,7 @@ endif
 
 lib_LTLIBRARIES = libagm.la
 libagm_la_SOURCES = $(agm_sources)
-libagm_la_LIBADD = -ltinyalsa -lar_osal -lar_gsl -lats -laudio_log_utils
+libagm_la_LIBADD = -ltinyalsa -lar_osal -lar_gsl -laudio_log_utils
 
 if !BUILDSYSTEM_OPENWRT
 libagm_la_LIBADD += -laudio_log_utils
